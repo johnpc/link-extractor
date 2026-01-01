@@ -5,8 +5,6 @@ import { join } from 'path';
 import { Command } from 'commander';
 import lz4 from 'lz4-napi';
 import Database from 'better-sqlite3';
-// @ts-ignore
-import snappy from 'snappy';
 
 interface TabEntry {
   url: string;
@@ -121,23 +119,39 @@ function extractSafariTabs(profilePath: string): string[] {
 }
 
 function extractChromeTabs(profilePath: string): string[] {
-  const sessionPath = join(profilePath, 'Default/Current Tabs');
+  const sessionsPath = join(profilePath, 'Default/Sessions');
 
-  if (!existsSync(sessionPath)) {
+  if (!existsSync(sessionsPath)) {
+    throw new Error('Chrome sessions directory not found. Make sure Chrome is installed.');
+  }
+
+  const files = readdirSync(sessionsPath).filter((f) => f.startsWith('Tabs_'));
+
+  if (files.length === 0) {
     throw new Error('Chrome session file not found. Make sure Chrome is running.');
   }
 
+  // Use the most recent Tabs file
+  const latestFile = files.sort().pop();
+  const sessionPath = join(sessionsPath, latestFile!);
+
   const buffer = readFileSync(sessionPath);
-  const decompressed = snappy.uncompressSync(buffer) as Buffer;
-  const content = decompressed.toString();
+  const content = buffer.toString('utf8', 0, buffer.length);
 
   const urls: string[] = [];
-  const urlRegex = /https?:\/\/[^\s"<>]+/g;
+  const urlRegex = /https?:\/\/[^\x00-\x1f\x7f-\x9f"<>]+/g;
   const matches = content.match(urlRegex);
 
   if (matches) {
-    // Deduplicate URLs
-    return [...new Set(matches)];
+    // Deduplicate and filter out invalid URLs
+    return [...new Set(matches)].filter((url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    });
   }
 
   return urls;

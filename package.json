@@ -50,7 +50,6 @@
     "better-sqlite3": "^12.5.0",
     "cheerio": "^1.1.2",
     "commander": "^14.0.2",
-    "lz4-napi": "^2.9.0",
-    "snappy": "^7.3.3"
+    "lz4-napi": "^2.9.0"
   }
 }
