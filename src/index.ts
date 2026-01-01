@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-import { readFileSync, readdirSync } from 'fs';
-import { homedir } from 'os';
+import { readFileSync, readdirSync, existsSync } from 'fs';
+import { homedir, platform } from 'os';
 import { join } from 'path';
+import { Command } from 'commander';
 import lz4 from 'lz4-napi';
 
 interface TabEntry {
@@ -20,7 +21,39 @@ interface Session {
   windows: Window[];
 }
 
-const profilePath = join(homedir(), 'Library/Application Support/Firefox/Profiles');
+const program = new Command();
+
+program
+  .name('link-extractor')
+  .description('Extract URLs from currently open Firefox tabs')
+  .option('-p, --profile-path <path>', 'Custom Firefox profile path')
+  .parse();
+
+const options = program.opts<{ profilePath?: string }>();
+
+function getDefaultProfilePath(): string {
+  const os = platform();
+  const home = homedir();
+
+  switch (os) {
+    case 'darwin':
+      return join(home, 'Library/Application Support/Firefox/Profiles');
+    case 'win32':
+      return join(home, 'AppData/Roaming/Mozilla/Firefox/Profiles');
+    case 'linux':
+      return join(home, '.mozilla/firefox');
+    default:
+      throw new Error(`Unsupported platform: ${os}`);
+  }
+}
+
+const profilePath = options.profilePath || getDefaultProfilePath();
+
+if (!existsSync(profilePath)) {
+  console.error(`Profile path not found: ${profilePath}`);
+  process.exit(1);
+}
+
 const profiles = readdirSync(profilePath).filter((p) => p.includes('default-release'));
 
 if (profiles.length === 0) {

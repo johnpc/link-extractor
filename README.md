@@ -23,12 +23,31 @@ Run the command to extract all URLs from your currently open Firefox tabs:
 npx @johnpc/link-extractor > tabs.txt
 ```
 
-This will output one URL per line.
+### Custom Profile Path
+
+Override the default Firefox profile path:
+
+```bash
+# macOS
+npx @johnpc/link-extractor -p ~/Library/Application\ Support/Firefox/Profiles
+
+# Linux
+npx @johnpc/link-extractor -p ~/.mozilla/firefox
+
+# Windows
+npx @johnpc/link-extractor -p %APPDATA%\Mozilla\Firefox\Profiles
+```
 
 ## Requirements
 
-- macOS (uses Firefox profile path at `~/Library/Application Support/Firefox/Profiles`)
 - Firefox browser with at least one profile
+- Supported platforms: macOS, Linux, Windows
+
+### Default Profile Paths
+
+- **macOS**: `~/Library/Application Support/Firefox/Profiles`
+- **Linux**: `~/.mozilla/firefox`
+- **Windows**: `%APPDATA%\Mozilla\Firefox\Profiles`
 
 ## How it works
 
