@@ -106,13 +106,19 @@ function extractFirefoxTabs(profilePath: string): string[] {
 
 function extractSafariTabs(profilePath: string): string[] {
   const dbPath = join(profilePath, 'BrowserState.db');
+  const containerDbPath = join(
+    homedir(),
+    'Library/Containers/com.apple.Safari/Data/Library/Safari/SafariTabs.db'
+  );
+
+  const actualDbPath = existsSync(containerDbPath) ? containerDbPath : dbPath;
 
   try {
-    const db = new Database(dbPath, { readonly: true });
+    const db = new Database(actualDbPath, { readonly: true });
 
     const rows = db
       .prepare(
-        `SELECT url FROM tabs WHERE url IS NOT NULL AND url != '' ORDER BY last_viewed_time DESC`
+        `SELECT url FROM bookmarks WHERE type = 0 AND url IS NOT NULL AND url != '' ORDER BY order_index`
       )
       .all() as Array<{ url: string }>;
 
