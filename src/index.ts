@@ -106,16 +106,32 @@ function extractFirefoxTabs(profilePath: string): string[] {
 
 function extractSafariTabs(profilePath: string): string[] {
   const dbPath = join(profilePath, 'BrowserState.db');
-  const db = new Database(dbPath, { readonly: true });
 
-  const rows = db
-    .prepare(
-      `SELECT url FROM tabs WHERE url IS NOT NULL AND url != '' ORDER BY last_viewed_time DESC`
-    )
-    .all() as Array<{ url: string }>;
+  try {
+    const db = new Database(dbPath, { readonly: true });
 
-  db.close();
-  return rows.map((row) => row.url);
+    const rows = db
+      .prepare(
+        `SELECT url FROM tabs WHERE url IS NOT NULL AND url != '' ORDER BY last_viewed_time DESC`
+      )
+      .all() as Array<{ url: string }>;
+
+    db.close();
+    return rows.map((row) => row.url);
+  } catch (error) {
+    const errorMsg = (error as Error).message;
+    if (errorMsg.includes('unable to open database') || errorMsg.includes('SQLITE_CANTOPEN')) {
+      throw new Error(
+        'Unable to access Safari database. On macOS, you need to grant Full Disk Access:\n' +
+          '1. Open System Settings → Privacy & Security → Full Disk Access\n' +
+          '2. Click the + button and add your Terminal app\n' +
+          '3. Enable the checkbox next to it\n' +
+          '4. Quit and restart your terminal completely\n' +
+          'Then try again.'
+      );
+    }
+    throw error;
+  }
 }
 
 function extractChromeTabs(profilePath: string): string[] {
