@@ -1,0 +1,4 @@
+node_modules/
+dist/
+*.txt
+.DS_Store
