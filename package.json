@@ -1,6 +1,6 @@
 {
   "name": "@johnpc/link-extractor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Extract URLs from currently open browser tabs (Firefox, Chrome, Safari)",
   "main": "dist/index.js",
   "type": "module",
