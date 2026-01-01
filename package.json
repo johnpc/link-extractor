@@ -1,7 +1,7 @@
 {
   "name": "@johnpc/link-extractor",
   "version": "1.0.0",
-  "description": "Extract URLs from currently open Firefox tabs",
+  "description": "Extract URLs from currently open browser tabs (Firefox, Chrome, Safari)",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
@@ -18,7 +18,13 @@
       "eslint --fix"
     ]
   },
-  "keywords": ["firefox", "tabs", "url", "extractor", "cli"],
+  "keywords": [
+    "firefox",
+    "tabs",
+    "url",
+    "extractor",
+    "cli"
+  ],
   "author": "johnpc",
   "license": "ISC",
   "repository": {
@@ -29,6 +35,7 @@
     "dist"
   ],
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.0.3",
     "@typescript-eslint/eslint-plugin": "^8.51.0",
     "@typescript-eslint/parser": "^8.51.0",
@@ -40,8 +47,10 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "better-sqlite3": "^12.5.0",
     "cheerio": "^1.1.2",
     "commander": "^14.0.2",
-    "lz4-napi": "^2.9.0"
+    "lz4-napi": "^2.9.0",
+    "snappy": "^7.3.3"
   }
 }

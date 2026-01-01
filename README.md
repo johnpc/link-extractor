@@ -1,6 +1,6 @@
 # @johnpc/link-extractor
 
-Extract URLs from currently open Firefox tabs.
+Extract URLs from currently open browser tabs (Firefox, Chrome, Safari).
 
 ## Installation
 
@@ -17,41 +17,77 @@ link-extractor
 
 ## Usage
 
-Run the command to extract all URLs from your currently open Firefox tabs:
+Extract URLs from Firefox (default):
 
 ```bash
 npx @johnpc/link-extractor > tabs.txt
 ```
 
-### Custom Profile Path
+### Browser Selection
 
-Override the default Firefox profile path:
+Use the `--browser` flag to specify which browser:
 
 ```bash
-# macOS
+# Firefox (default)
+npx @johnpc/link-extractor --browser firefox
+
+# Chrome
+npx @johnpc/link-extractor --browser chrome
+
+# Safari (macOS only)
+npx @johnpc/link-extractor --browser safari
+```
+
+### Custom Profile Path
+
+Override the default browser profile path:
+
+```bash
+# macOS Firefox
 npx @johnpc/link-extractor -p ~/Library/Application\ Support/Firefox/Profiles
 
-# Linux
+# Linux Firefox
 npx @johnpc/link-extractor -p ~/.mozilla/firefox
 
-# Windows
+# Windows Firefox
 npx @johnpc/link-extractor -p %APPDATA%\Mozilla\Firefox\Profiles
+
+# macOS Chrome
+npx @johnpc/link-extractor --browser chrome -p ~/Library/Application\ Support/Google/Chrome
 ```
 
 ## Requirements
 
-- Firefox browser with at least one profile
-- Supported platforms: macOS, Linux, Windows
+- One of: Firefox, Chrome, or Safari
+- Supported platforms: macOS, Linux (Firefox/Chrome), Windows (Firefox/Chrome)
 
 ### Default Profile Paths
 
-- **macOS**: `~/Library/Application Support/Firefox/Profiles`
-- **Linux**: `~/.mozilla/firefox`
-- **Windows**: `%APPDATA%\Mozilla\Firefox\Profiles`
+**Firefox:**
+- macOS: `~/Library/Application Support/Firefox/Profiles`
+- Linux: `~/.mozilla/firefox`
+- Windows: `%APPDATA%\Mozilla\Firefox\Profiles`
+
+**Chrome:**
+- macOS: `~/Library/Application Support/Google/Chrome`
+- Linux: `~/.config/google-chrome`
+- Windows: `%APPDATA%\Local\Google\Chrome\User Data`
+
+**Safari:**
+- macOS: `~/Library/Safari` (requires Full Disk Access permission)
+
+### Safari Permissions
+
+On macOS, Safari extraction requires Full Disk Access:
+1. Open System Settings → Privacy & Security → Full Disk Access
+2. Add Terminal (or your terminal app)
+3. Restart your terminal
 
 ## How it works
 
-The tool reads Firefox's session recovery file (`recovery.jsonlz4`), decompresses it, and extracts the current URL from each open tab across all windows.
+- **Firefox**: Reads and decompresses `recovery.jsonlz4` (LZ4 compression)
+- **Chrome**: Reads and decompresses `Current Tabs` (Snappy compression)
+- **Safari**: Queries `BrowserState.db` SQLite database
 
 ## Development
 
