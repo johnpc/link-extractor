@@ -87,7 +87,7 @@ On macOS, Safari extraction requires Full Disk Access:
 
 - **Firefox**: Reads and decompresses `recovery.jsonlz4` (LZ4 compression)
 - **Chrome**: Parses `Sessions/Tabs_*` files (Chrome's SNSS session format)
-- **Safari**: Queries `BrowserState.db` SQLite database
+- **Safari**: Queries `SafariTabs.db` SQLite database (in `~/Library/Containers/com.apple.Safari/Data/Library/Safari/`)
 
 ## Development
 
